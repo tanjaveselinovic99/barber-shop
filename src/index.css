@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&family=Squada+One&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-roboto: "Roboto Slab", "serif";
+
+  --color-chocolate: #2c2721;
+  --color-dark-blue: #1c2743;
+  --color-bright-orange: #fd9563;
+  --color-light-gray: #838383;
+  --text-h1: 58px;
+  --text-h1--letter-spacing: 1px;
+  --text-h3: 37px;
+  --text-h3--letter-spacing: 1.8px;
+  --text-input: 14px;
+  --text-input--letter-spacing: 0.6px;
+  --text-button: 18px;
+  --text-button--letter-spacing: 2px;
+  --text-p: 17px;
+
+  --font-poppins: Poppins, sans-serif;
+}
+.squada-one-medium {
+  font-family: "Squada One", sans-serif;
+  font-weight: 500;
+}
+
+.roboto-slab-medium {
+  font-family: "Roboto Slab", serif;
+  font-weight: 500;
+}
+
+@layer components {
+  .style {
+    input,
+    select {
+      font-size: var(--text-input);
+      letter-spacing: var(--text-input--letter-spacing);
+    }
+  }
+}
+
+body {
+  background-color: #fcf4ea;
+  height: 100vh;
+}
