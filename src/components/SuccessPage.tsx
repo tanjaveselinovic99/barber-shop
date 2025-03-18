@@ -2,8 +2,8 @@ import barberGif from "../assets/barber.gif";
 
 function SuccessPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h3 className="text-h3 text-h3-letter-spacing squada-one-medium text-center mb-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 font-medium">
+      <h3 className="text-2xl text-tracking-xl font-squada text-center mb-4">
         APPOINTMENT SUCCESSFULLY BOOKED
       </h3>
 

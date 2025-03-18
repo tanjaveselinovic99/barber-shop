@@ -1,46 +1,55 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&family=Squada+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&family=Squada+One&display=swap");
 @import "tailwindcss";
 
 @theme {
+  /* Google Fonts */
   --font-roboto: "Roboto Slab", "serif";
+  --font-squada: "Squada One", sans-serif;
 
+  /* Custom Colors */
   --color-chocolate: #2c2721;
   --color-dark-blue: #1c2743;
   --color-bright-orange: #fd9563;
   --color-light-gray: #838383;
-  --text-h1: 58px;
-  --text-h1--letter-spacing: 1px;
-  --text-h3: 37px;
-  --text-h3--letter-spacing: 1.8px;
-  --text-input: 14px;
-  --text-input--letter-spacing: 0.6px;
-  --text-button: 18px;
-  --text-button--letter-spacing: 2px;
-  --text-p: 17px;
+  --color-light-beige: #fcf4ea;
 
-  --font-poppins: Poppins, sans-serif;
-}
-.squada-one-medium {
-  font-family: "Squada One", sans-serif;
-  font-weight: 500;
-}
+  /* Font Sizes */
+  --text-3xl: 3.625rem; /* 58px */
+  --text-2xl: 2.3125rem; /* 37px */
+  --text-xl: 1.125rem; /* 18px */
+  --text-lg: 1.0625rem; /* 17px */
+  --text-sm: 0.875rem; /* 14px */
 
-.roboto-slab-medium {
-  font-family: "Roboto Slab", serif;
-  font-weight: 500;
+  /* Letter Spacing */
+  --tracking-2xl: 0.125rem; /* 2px */
+  --tracking-xl: 0.1125rem; /* 1.8px */
+  --tracking-lg: 0.0625rem; /* 1px */
+  --tracking-sm: 0.0375rem; /* 0.6px */
+
+  /* Custom Radius*/
+  --rounded-xl: 1rem;
+  --rounded-sm: 0.13rem;
 }
 
 @layer components {
   .style {
     input,
     select {
-      font-size: var(--text-input);
-      letter-spacing: var(--text-input--letter-spacing);
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-sm);
     }
   }
 }
-
 body {
-  background-color: #fcf4ea;
-  height: 100vh;
+  @apply bg-light-beige overscroll-none;
+}
+#root,
+body,
+html {
+  @apply h-full;
+}
+html,
+body {
+  @apply m-0 p-0;
 }

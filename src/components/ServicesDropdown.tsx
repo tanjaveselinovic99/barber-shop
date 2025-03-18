@@ -29,7 +29,7 @@ const ServicesDropdown: React.FC<Props> = ({ onSelect, setPrice }) => {
     onSelect(selectedServiceId);
 
     const selectedService = services.find(
-      (service) => service.id === selectedServiceId
+      (service) => service.id === selectedServiceId,
     );
     if (selectedService) {
       setPrice(selectedService.price);
@@ -40,7 +40,8 @@ const ServicesDropdown: React.FC<Props> = ({ onSelect, setPrice }) => {
 
   return (
     <select
-      className="bg-white rounded-[2px] roboto-slab-medium text-light-gray p-2 w-full"
+      name="service"
+      className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
       onChange={handleSelect}
       required
     >

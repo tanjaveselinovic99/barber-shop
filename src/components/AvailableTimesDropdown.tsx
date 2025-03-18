@@ -44,15 +44,15 @@ const AvailableTimesDropdown: React.FC<Props> = ({
   const fetchAvailableTimes = async () => {
     if (!barberId || !selectedDate) return;
 
-    // Get barber data
+    // Get barber
     const barbers: Barber[] = await getBarbers();
     const barber = barbers.find((b) => b.id === barberId);
     if (!barber) return;
 
-    // Get the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+    // (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
     const dayOfWeek = selectedDate.getDay();
     const workHours = barber.workHours.find(
-      (wh: WorkHours) => wh.day === dayOfWeek
+      (wh: WorkHours) => wh.day === dayOfWeek,
     );
 
     if (!workHours) {
@@ -65,7 +65,7 @@ const AvailableTimesDropdown: React.FC<Props> = ({
     // Get existing appointments for the selected barber
     const appointments: Appointment[] = await getAppointments();
     const barberAppointments = appointments.filter(
-      (appt) => appt.barberId === barberId
+      (appt) => appt.barberId === barberId,
     );
 
     // Generate all possible appointment times within work hours
@@ -99,12 +99,16 @@ const AvailableTimesDropdown: React.FC<Props> = ({
 
   return (
     <select
-      className="bg-white rounded-[2px] roboto-slab-medium text-light-gray p-2 w-full"
-      onFocus={fetchAvailableTimes} // Fetch available times when dropdown is focused
+      name="time"
+      className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
+      onFocus={fetchAvailableTimes}
       onChange={(e) => onSelect(e.target.value)}
+      disabled={!barberId || !selectedDate}
     >
       <option value="">
-        {availableTimes.length > 0 ? "Select Time" : "Select a date first"}
+        {availableTimes.length > 0
+          ? "Select Time"
+          : "Select barber & date first"}
       </option>
       {availableTimes.length > 0 ? (
         availableTimes.map((time) => (
@@ -113,7 +117,7 @@ const AvailableTimesDropdown: React.FC<Props> = ({
           </option>
         ))
       ) : (
-        <option disabled>No available times</option>
+        <option disabled>Sorry. No available times.</option>
       )}
     </select>
   );

@@ -1,27 +1,15 @@
-import barberImage from "../assets/Image.jpg";
-
 function Header() {
   return (
-    <div className="flex flex-col items-center justify-center md:p-4 p-2 text-center">
-      <h1 className="md:text-h1 text-h3 squada-one-medium uppercase">
+    <div className="flex flex-col items-center justify-center md:p-4 p-2 text-center font-medium">
+      <h1 className="md:text-3xl md:text-tracking-lg font-medium text-2xl font-squada uppercase">
         Book Your Barber
       </h1>
-      <p className="hidden md:block text-p text-h3-letter-spacing roboto-slab-medium">
-        Great Hair Doesn’t Happen By Chance. It Happens By Appointment! So,
-        Don't Wait And Book Your Appointment Now!
-      </p>
-
-      <p className="md:hidden text-input text-input-letter-spacing roboto-slab-medium">
+      <p className="md:block md:text-lg md:text-tracking-lg text-input text-tracking-sm font-roboto">
         Great Hair Doesn’t Happen By Chance. It Happens By Appointment!
+        <span className="hidden md:inline">
+          So, Don't Wait And Book Your Appointment Now!
+        </span>
       </p>
-
-      <div className="w-full flex justify-center md:justify-start">
-        <img
-          src={barberImage}
-          alt="barber"
-          className="m-4 md:m-8 h-auto max-w-xs sm:max-w-md md:max-w-2xl outline-2 outline-solid outline-chocolate p-1 w-full"
-        />
-      </div>
     </div>
   );
 }

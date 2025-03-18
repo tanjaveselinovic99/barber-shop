@@ -136,6 +136,36 @@
       "startDate": 1743075000000,
       "barberId": "1",
       "serviceId": "1"
+    },
+    {
+      "id": "b646",
+      "startDate": 1742905800000,
+      "barberId": "1",
+      "serviceId": "2"
+    },
+    {
+      "id": "b8c3",
+      "startDate": null,
+      "barberId": "1",
+      "serviceId": "1"
+    },
+    {
+      "id": "6121",
+      "startDate": 1742479200000,
+      "barberId": "1",
+      "serviceId": "2"
+    },
+    {
+      "id": "7812",
+      "startDate": 1742565600000,
+      "barberId": "1",
+      "serviceId": "2"
+    },
+    {
+      "id": "00ab",
+      "startDate": 1742479200000,
+      "barberId": "1",
+      "serviceId": "3"
     }
   ],
   "workHours": [

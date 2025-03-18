@@ -21,9 +21,10 @@ const BarbersDropdown: React.FC<Props> = ({ onSelect }) => {
 
   return (
     <select
-      className="bg-white rounded-[2px] roboto-slab-medium text-light-gray p-2 w-full"
+      className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
       onFocus={fetchBarbers}
       onChange={(e) => onSelect(e.target.value)}
+      name="barber"
     >
       <option value="">Select Barber</option>
       {barbers.map((barber) => (
