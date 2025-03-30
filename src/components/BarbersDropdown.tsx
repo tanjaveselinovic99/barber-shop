@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getBarbers } from "../API/api";
+import { useCallback } from "react";
+import useFetchData from "../hooks/useFetchData";
 
 interface Barber {
   id: string;
@@ -12,22 +12,25 @@ interface Props {
 }
 
 const BarbersDropdown: React.FC<Props> = ({ onSelect }) => {
-  const [barbers, setBarbers] = useState<Barber[]>([]);
+  const transformData = useCallback((data: any) => data, []);
 
-  const fetchBarbers = async () => {
-    const data: Barber[] = await getBarbers();
-    setBarbers(data);
-  };
+  const {
+    data: barbers,
+    loading,
+    error,
+  } = useFetchData<Barber[]>("http://localhost:3000/barbers", transformData);
 
   return (
     <select
       className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
-      onFocus={fetchBarbers}
       onChange={(e) => onSelect(e.target.value)}
       name="barber"
+      disabled={loading || error !== null}
     >
       <option value="">Select Barber</option>
-      {barbers.map((barber) => (
+      {loading && <option>Loading...</option>}
+      {error && <option>Error loading barbers</option>}
+      {barbers?.map((barber) => (
         <option key={barber.id} value={barber.id}>
           {barber.firstName} {barber.lastName}
         </option>

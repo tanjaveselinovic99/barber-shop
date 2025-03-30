@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getAppointments, getBarbers } from "../API/api";
+import { useState, useCallback, useEffect } from "react";
+import useFetchData from "../hooks/useFetchData"; // Assuming this is your custom hook
 
 interface Appointment {
   id: string;
@@ -41,76 +41,109 @@ const AvailableTimesDropdown: React.FC<Props> = ({
 }) => {
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
 
-  const fetchAvailableTimes = async () => {
-    if (!barberId || !selectedDate) return;
+  const transformBarbers = useCallback((data: any) => data, []);
+  const {
+    data: barbers,
+    loading: barbersLoading,
+    error: barbersError,
+  } = useFetchData<Barber[]>("http://localhost:3000/barbers", transformBarbers);
 
-    // Get barber
-    const barbers: Barber[] = await getBarbers();
-    const barber = barbers.find((b) => b.id === barberId);
-    if (!barber) return;
+  const transformAppointments = useCallback((data: any) => data, []);
+  const {
+    data: appointments,
+    loading: appointmentsLoading,
+    error: appointmentsError,
+  } = useFetchData<Appointment[]>(
+    "http://localhost:3000/appointments",
+    transformAppointments
+  );
 
-    // (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-    const dayOfWeek = selectedDate.getDay();
-    const workHours = barber.workHours.find(
-      (wh: WorkHours) => wh.day === dayOfWeek,
-    );
+  useEffect(() => {
+    const fetchAvailableTimes = async () => {
+      if (!barberId || !selectedDate || !barbers || !appointments) return;
 
-    if (!workHours) {
-      setAvailableTimes([]); // No available hours for that day
-      return;
-    }
+      // Get barber
+      const barber = barbers.find((b) => b.id === barberId);
+      if (!barber) return;
 
-    const { startHour, endHour, lunchTime } = workHours;
-
-    // Get existing appointments for the selected barber
-    const appointments: Appointment[] = await getAppointments();
-    const barberAppointments = appointments.filter(
-      (appt) => appt.barberId === barberId,
-    );
-
-    // Generate all possible appointment times within work hours
-    let times: string[] = [];
-    for (let hour = startHour; hour < Number(endHour); hour++) {
-      times.push(`${hour}:00`);
-      if (hour + 0.5 < Number(endHour)) {
-        times.push(`${hour}:30`);
-      }
-    }
-
-    times = times.filter((time) => {
-      const hour = parseInt(time.split(":")[0]);
-      const minute = time.includes("30") ? 30 : 0;
-
-      return !barberAppointments.some((appt) => {
-        const apptDate = new Date(appt.startDate * 1000);
-        return apptDate.getHours() === hour && apptDate.getMinutes() === minute;
-      });
-    });
-
-    times = times.filter((time) => {
-      const hour = parseInt(time.split(":")[0]);
-      return !(
-        hour === lunchTime.startHour || hour === lunchTime.startHour + 0.5
+      // (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+      const dayOfWeek = selectedDate.getDay();
+      const workHours = barber.workHours.find(
+        (wh: WorkHours) => wh.day === dayOfWeek
       );
-    });
 
-    setAvailableTimes(times);
-  };
+      if (!workHours) {
+        setAvailableTimes([]); // No available hours for that day
+        return;
+      }
+
+      const { startHour, endHour, lunchTime } = workHours;
+
+      // Filter out barber's appointments for the selected date
+      const barberAppointments = appointments.filter(
+        (appt) => appt.barberId === barberId
+      );
+
+      // Generate all possible appointment times within work hours
+      let times: string[] = [];
+      for (let hour = startHour; hour < Number(endHour); hour++) {
+        times.push(`${hour}:00`);
+        if (hour + 0.5 < Number(endHour)) {
+          times.push(`${hour}:30`);
+        }
+      }
+
+      // Remove occupied times based on appointments
+      times = times.filter((time) => {
+        const hour = parseInt(time.split(":")[0]);
+        const minute = time.includes("30") ? 30 : 0;
+
+        return !barberAppointments.some((appt) => {
+          const apptDate = new Date(appt.startDate * 1000);
+          return (
+            apptDate.getHours() === hour && apptDate.getMinutes() === minute
+          );
+        });
+      });
+
+      // Remove lunch break times
+      times = times.filter((time) => {
+        const hour = parseInt(time.split(":")[0]);
+        return !(
+          hour === lunchTime.startHour || hour === lunchTime.startHour + 0.5
+        );
+      });
+
+      setAvailableTimes(times);
+    };
+
+    fetchAvailableTimes();
+  }, [barberId, selectedDate, barbers, appointments]);
 
   return (
     <select
       name="time"
       className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
-      onFocus={fetchAvailableTimes}
       onChange={(e) => onSelect(e.target.value)}
-      disabled={!barberId || !selectedDate}
+      disabled={
+        !barberId ||
+        !selectedDate ||
+        barbersLoading ||
+        appointmentsLoading ||
+        Boolean(barbersError) ||
+        Boolean(appointmentsError)
+      }
     >
       <option value="">
-        {availableTimes.length > 0
+        {barbersLoading || appointmentsLoading
+          ? "Loading available times..."
+          : availableTimes.length > 0
           ? "Select Time"
           : "Select barber & date first"}
       </option>
-      {availableTimes.length > 0 ? (
+      {barbersError || appointmentsError ? (
+        <option disabled>Error loading times</option>
+      ) : availableTimes.length > 0 ? (
         availableTimes.map((time) => (
           <option key={time} value={time}>
             {time}

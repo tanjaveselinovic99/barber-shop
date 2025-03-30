@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getServices } from "../API/api";
+import { useCallback } from "react";
+import useFetchData from "../hooks/useFetchData";
 
 interface Service {
   id: string;
@@ -14,22 +14,20 @@ interface Props {
 }
 
 const ServicesDropdown: React.FC<Props> = ({ onSelect, setPrice }) => {
-  const [services, setServices] = useState<Service[]>([]);
+  const transformData = useCallback((data: any) => data, []);
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      const data: Service[] = await getServices();
-      setServices(data);
-    };
-    fetchServices();
-  }, []);
+  const {
+    data: services = [],
+    loading,
+    error,
+  } = useFetchData<Service[]>("http://localhost:3000/services", transformData);
 
   const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedServiceId = event.target.value;
     onSelect(selectedServiceId);
 
-    const selectedService = services.find(
-      (service) => service.id === selectedServiceId,
+    const selectedService = services?.find(
+      (service) => service.id === selectedServiceId
     );
     if (selectedService) {
       setPrice(selectedService.price);
@@ -46,7 +44,9 @@ const ServicesDropdown: React.FC<Props> = ({ onSelect, setPrice }) => {
       required
     >
       <option value="">Select Service</option>
-      {services.map((service) => (
+      {loading && <option>Loading...</option>}
+      {error && <option>Error loading services</option>}
+      {services?.map((service) => (
         <option key={service.id} value={service.id}>
           {service.name}
         </option>
