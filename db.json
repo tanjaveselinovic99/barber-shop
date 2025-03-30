@@ -196,6 +196,12 @@
       "startDate": null,
       "barberId": "1",
       "serviceId": "2"
+    },
+    {
+      "id": "d8ea",
+      "startDate": 1743685200000,
+      "barberId": "1",
+      "serviceId": "2"
     }
   ],
   "workHours": [
