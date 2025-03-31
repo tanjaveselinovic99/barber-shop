@@ -66,33 +66,27 @@ function Form() {
             <div>
               <input
                 {...register("firstName", {
-                  required: "First name is required",
+                  required: "Please enter full name",
                 })}
                 type="text"
                 placeholder="First Name"
                 className="bg-white rounded-sm font-roboto p-2 w-full"
               />
-              {errors.firstName && (
-                <p className="text-red-500 font-roboto">
-                  {errors.firstName.message}
-                </p>
-              )}
             </div>
             <div>
               <input
                 {...register("lastName", {
-                  required: "Last name is required",
+                  required: "Please enter full name",
                 })}
                 type="text"
                 placeholder="Last Name"
                 className="bg-white rounded-sm font-roboto p-2 w-full"
               />
-              {errors.lastName && (
-                <p className="text-red-500 font-roboto">
-                  {errors.lastName.message}
-                </p>
-              )}
             </div>
+
+            {(errors.firstName || errors.lastName) && (
+              <p className="text-red-500 font-roboto">Please enter full name</p>
+            )}
           </div>
         </div>
 
@@ -136,7 +130,7 @@ function Form() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
             <BarbersDropdown
-              onSelect={(barberId) => setValue("selectedBarber", barberId)} // Set selected barber in form state
+              onSelect={(barberId) => setValue("selectedBarber", barberId)}
             />
             {errors.selectedBarber && (
               <p className="text-red-500 font-roboto">
@@ -147,7 +141,7 @@ function Form() {
           <div>
             <ServicesDropdown
               onSelect={(serviceId) => {
-                setValue("selectedService", serviceId); // Set selected service
+                setValue("selectedService", serviceId);
               }}
               setPrice={setServicePrice}
             />
@@ -177,7 +171,7 @@ function Form() {
               barberId={selectedBarber}
               selectedDate={new Date(selectedDate)}
               serviceDuration={30}
-              onSelect={(time) => setValue("selectedTime", time)} // Set selected time
+              onSelect={(time) => setValue("selectedTime", time)}
             />
             {errors.selectedTime && (
               <p className="text-red-500 roboto-slab-medium">

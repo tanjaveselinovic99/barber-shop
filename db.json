@@ -202,6 +202,12 @@
       "startDate": 1743685200000,
       "barberId": "1",
       "serviceId": "2"
+    },
+    {
+      "id": "a803",
+      "startDate": 1743501600000,
+      "barberId": "1",
+      "serviceId": "2"
     }
   ],
   "workHours": [
