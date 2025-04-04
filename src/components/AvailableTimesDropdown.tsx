@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import useFetchData from "../hooks/useFetchData"; // Assuming this is your custom hook
+import useFetchData from "../hooks/useFetchData";
 
 interface Appointment {
   id: string;
@@ -84,19 +84,18 @@ const AvailableTimesDropdown: React.FC<Props> = ({
         (appt) => appt.barberId === barberId
       );
 
-      // Generate all possible appointment times within work hours
+      // Generate all possible appointment times within work hours considering service duration
       let times: string[] = [];
       for (let hour = startHour; hour < Number(endHour); hour++) {
-        times.push(`${hour}:00`);
-        if (hour + 0.5 < Number(endHour)) {
-          times.push(`${hour}:30`);
+        for (let minute = 0; minute < 60; minute += serviceDuration) {
+          const time = `${hour}:${minute < 10 ? `0${minute}` : minute}`;
+          times.push(time);
         }
       }
 
       // Remove occupied times based on appointments
       times = times.filter((time) => {
-        const hour = parseInt(time.split(":")[0]);
-        const minute = time.includes("30") ? 30 : 0;
+        const [hour, minute] = time.split(":").map(Number);
 
         return !barberAppointments.some((appt) => {
           const apptDate = new Date(appt.startDate * 1000);
@@ -108,9 +107,11 @@ const AvailableTimesDropdown: React.FC<Props> = ({
 
       // Remove lunch break times
       times = times.filter((time) => {
-        const hour = parseInt(time.split(":")[0]);
+        const [hour, minute] = time.split(":").map(Number);
         return !(
-          hour === lunchTime.startHour || hour === lunchTime.startHour + 0.5
+          (hour === lunchTime.startHour && minute >= lunchTime.startHour) ||
+          (hour === lunchTime.startHour + 1 &&
+            minute < lunchTime.durationMinutes)
         );
       });
 
@@ -118,21 +119,18 @@ const AvailableTimesDropdown: React.FC<Props> = ({
     };
 
     fetchAvailableTimes();
-  }, [barberId, selectedDate, barbers, appointments]);
+  }, [barberId, selectedDate, barbers, appointments, serviceDuration]);
+
+  // Disable the select list if either barberId or selectedDate is not selected
+  const isSelectDisabled =
+    !barberId || !selectedDate || barbersLoading || appointmentsLoading;
 
   return (
     <select
       name="time"
       className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
       onChange={(e) => onSelect(e.target.value)}
-      disabled={
-        !barberId ||
-        !selectedDate ||
-        barbersLoading ||
-        appointmentsLoading ||
-        Boolean(barbersError) ||
-        Boolean(appointmentsError)
-      }
+      disabled={isSelectDisabled}
     >
       <option value="">
         {barbersLoading || appointmentsLoading

@@ -1,34 +1,56 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import BarbersDropdown from "./BarbersDropdown";
 import ServicesDropdown from "./ServicesDropdown";
 import AvailableTimesDropdown from "./AvailableTimesDropdown";
 import { bookAppointment } from "../API/api";
 import barberImage from "../assets/Image.jpg";
-import { useForm, SubmitHandler } from "react-hook-form";
 
-type FormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  selectedBarber: string;
-  selectedService: string;
-  selectedTime: string;
-  selectedDate: string;
-};
+export const formSchema = z.object({
+  firstName: z.string().min(1, "Please enter your first name"),
+  lastName: z.string().min(1, "Please enter your last name"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z
+    .string()
+    .regex(
+      /^(\+386\s?[1-7]\s?\d{3}\s?\d{2}\s?\d{2})$/,
+      "Please enter a valid number"
+    ),
+  selectedBarber: z.string().nonempty("Please select a barber"),
+  selectedService: z.string().nonempty("Please select a service"),
+  selectedTime: z.string().nonempty("Please select a time"),
+  selectedDate: z.string().nonempty("Please select a date"),
+});
+
+export type FormData = z.infer<typeof formSchema>;
 
 function Form() {
   const [servicePrice, setServicePrice] = useState<string>("");
   const navigate = useNavigate();
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     watch,
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      selectedBarber: "",
+      selectedService: "",
+      selectedTime: "",
+      selectedDate: "",
+    },
+  });
 
   const selectedDate = watch("selectedDate");
   const selectedBarber = watch("selectedBarber");
@@ -54,52 +76,51 @@ function Form() {
           className="h-auto border-2 border-chocolate p-2 w-full"
         />
       </div>
+
       <form
-        className="bg-dark-blue p-6 flex flex-col items-center w-full md:w-max justify-center space-y-4  mb-6 md:mt-0 md:mb-0"
+        className="bg-dark-blue p-6 flex flex-col items-center w-full md:w-max justify-center space-y-4 mb-6 md:mt-0 md:mb-0"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h3 className="text-white text-2xl  text-tracking-xl font-squada text-center">
+        <h3 className="text-white text-2xl text-tracking-xl font-squada text-center">
           BOOK YOUR APPOINTMENT
         </h3>
+
         <div className="w-full space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <div>
               <input
-                {...register("firstName", {
-                  required: "Please enter full name",
-                })}
+                {...register("firstName")}
                 type="text"
                 placeholder="First Name"
                 className="bg-white rounded-sm font-roboto p-2 w-full"
               />
+              {errors.firstName && (
+                <p className="text-red-500 font-roboto">
+                  {errors.firstName.message}
+                </p>
+              )}
             </div>
+
             <div>
               <input
-                {...register("lastName", {
-                  required: "Please enter full name",
-                })}
+                {...register("lastName")}
                 type="text"
                 placeholder="Last Name"
                 className="bg-white rounded-sm font-roboto p-2 w-full"
               />
+              {errors.lastName && (
+                <p className="text-red-500 font-roboto">
+                  {errors.lastName.message}
+                </p>
+              )}
             </div>
-
-            {(errors.firstName || errors.lastName) && (
-              <p className="text-red-500 font-roboto">Please enter full name</p>
-            )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
             <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Please enter a valid email",
-                },
-              })}
+              {...register("email")}
               type="email"
               placeholder="Email"
               className="bg-white rounded-sm font-roboto p-2 w-full"
@@ -108,15 +129,10 @@ function Form() {
               <p className="text-red-500 font-roboto">{errors.email.message}</p>
             )}
           </div>
+
           <div>
             <input
-              {...register("phone", {
-                required: "Phone number is required",
-                pattern: {
-                  value: /^(\+386\s?[1-7]\s?\d{3}\s?\d{2}\s?\d{2})$/,
-                  message: "Please enter a valid phone number",
-                },
-              })}
+              {...register("phone")}
               type="text"
               placeholder="Slovenian Contact Number"
               className="bg-white rounded-sm font-roboto p-2 w-full"
@@ -129,8 +145,10 @@ function Form() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
-            <BarbersDropdown
-              onSelect={(barberId) => setValue("selectedBarber", barberId)}
+            <Controller
+              name="selectedBarber"
+              control={control}
+              render={({ field }) => <BarbersDropdown field={field} />}
             />
             {errors.selectedBarber && (
               <p className="text-red-500 font-roboto">
@@ -139,23 +157,28 @@ function Form() {
             )}
           </div>
           <div>
-            <ServicesDropdown
-              onSelect={(serviceId) => {
-                setValue("selectedService", serviceId);
-              }}
-              setPrice={setServicePrice}
+            <Controller
+              name="selectedService"
+              control={control}
+              render={({ field }) => (
+                <ServicesDropdown
+                  onSelect={field.onChange}
+                  setPrice={setServicePrice}
+                />
+              )}
             />
             {errors.selectedService && (
-              <p className="text-red-500">{errors.selectedService.message}</p>
+              <p className="text-red-500 font-roboto">
+                {errors.selectedService.message}
+              </p>
             )}
           </div>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
             <input
-              {...register("selectedDate", {
-                required: "Please select a date",
-              })}
+              {...register("selectedDate")}
               type="date"
               className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
               min={new Date().toISOString().split("T")[0]}
@@ -166,15 +189,26 @@ function Form() {
               </p>
             )}
           </div>
+
           <div>
-            <AvailableTimesDropdown
-              barberId={selectedBarber}
-              selectedDate={new Date(selectedDate)}
-              serviceDuration={30}
-              onSelect={(time) => setValue("selectedTime", time)}
+            <Controller
+              name="selectedTime"
+              control={control}
+              render={({ field }) => (
+                <AvailableTimesDropdown
+                  {...field}
+                  barberId={selectedBarber}
+                  selectedDate={
+                    selectedDate ? new Date(selectedDate) : new Date()
+                  }
+                  serviceDuration={30}
+                  onSelect={field.onChange}
+                />
+              )}
             />
+
             {errors.selectedTime && (
-              <p className="text-red-500 roboto-slab-medium">
+              <p className="text-red-500 font-roboto">
                 {errors.selectedTime.message}
               </p>
             )}

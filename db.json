@@ -208,6 +208,42 @@
       "startDate": 1743501600000,
       "barberId": "1",
       "serviceId": "2"
+    },
+    {
+      "id": "78d6",
+      "startDate": 1744371000000,
+      "barberId": "1",
+      "serviceId": "2"
+    },
+    {
+      "id": "51dc",
+      "startDate": 1744803000000,
+      "barberId": "1",
+      "serviceId": "3"
+    },
+    {
+      "id": "6c2c",
+      "startDate": null,
+      "barberId": "1",
+      "serviceId": "2"
+    },
+    {
+      "id": "24cf",
+      "startDate": 1745321400000,
+      "barberId": "1",
+      "serviceId": "1"
+    },
+    {
+      "id": "388b",
+      "startDate": null,
+      "barberId": "1",
+      "serviceId": "1"
+    },
+    {
+      "id": "df59",
+      "startDate": null,
+      "barberId": "1",
+      "serviceId": "1"
     }
   ],
   "workHours": [

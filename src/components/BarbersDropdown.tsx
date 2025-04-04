@@ -8,10 +8,10 @@ interface Barber {
 }
 
 interface Props {
-  onSelect: (barberId: string) => void;
+  field: any; // accept field directly
 }
 
-const BarbersDropdown: React.FC<Props> = ({ onSelect }) => {
+const BarbersDropdown: React.FC<Props> = ({ field }) => {
   const transformData = useCallback((data: any) => data, []);
 
   const {
@@ -22,9 +22,8 @@ const BarbersDropdown: React.FC<Props> = ({ onSelect }) => {
 
   return (
     <select
+      {...field}
       className="bg-white rounded-sm font-roboto text-light-gray p-2 w-full"
-      onChange={(e) => onSelect(e.target.value)}
-      name="barber"
       disabled={loading || error !== null}
     >
       <option value="">Select Barber</option>
